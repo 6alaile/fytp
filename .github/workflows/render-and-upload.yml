@@ -9,11 +9,12 @@ on:
   workflow_dispatch:
     inputs:
       spec:
-        description: "Spec file to render (from specs/*.json)"
+        description: "Spec file to render (edit this list when adding a new spec)"
         type: choice
         required: true
         default: "specs/world_cup_2026.json"
-        options: ${{ fromJSON(needs.meta.outputs.specs) }}
+        options:
+          - specs/world_cup_2026.json
       skip_upload:
         description: "Skip YouTube upload (render only)"
         type: boolean
@@ -29,30 +30,14 @@ on:
           - private
           - ""
 
-# Two-stage: the first job discovers spec files for the dispatch dropdown,
-# the second does the actual work.
+# Concurrency limit so a tag+push combo doesn't run twice in parallel.
 concurrency:
   group: render-and-upload-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  meta:
-    name: Discover specs
-    runs-on: ubuntu-latest
-    outputs:
-      specs: ${{ steps.discover.outputs.specs }}
-    steps:
-      - uses: actions/checkout@v4
-      - id: discover
-        run: |
-          # List all specs/*.json so the dispatch dropdown is always up to date.
-          # _example.json is filtered out — it's a reference, not a renderable spec.
-          SPECS=$(ls specs/*.json 2>/dev/null | grep -v '_example' | sort | jq -R . | jq -s 'map(select(length > 0))')
-          echo "specs=$SPECS" >> "$GITHUB_OUTPUT"
-
   render:
     name: Render and upload
-    needs: meta
     runs-on: ubuntu-latest
     timeout-minutes: 75
 
