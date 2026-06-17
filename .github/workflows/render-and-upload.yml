@@ -77,13 +77,20 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # HyperFrames v0.6.103+ requires Node >= 22. The runner's
+          # default is 20, so we pin to 22 explicitly.
+          node-version: '22'
           cache: 'npm'
 
       - name: Install ffmpeg and system fonts
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg fonts-dejavu fonts-liberation jq
+          # HyperFrames v0.6.103 wants chrome-headless-shell for the optimized
+          # capture path. The 'system' Chrome fallback works but is slower
+          # and uses screenshot mode.
+          npx --yes @puppeteer/browsers install chrome-headless-shell@stable
+          echo "HYPERFRAMES_BROWSER_PATH=$(ls ~/.cache/puppeteer/chrome-headless-shell/*/chrome-headless-shell-linux64/chrome-headless-shell | head -1)" >> "$GITHUB_ENV"
 
       - name: Install Python dependencies
         run: pip install -r requirements.txt
@@ -107,6 +114,10 @@ jobs:
           PEXELS_API_KEY:        ${{ secrets.PEXELS_API_KEY }}
           ELEVENLABS_API_KEY:    ${{ secrets.ELEVENLABS_API_KEY }}
           ELEVENLABS_VOICE_ID:   ${{ secrets.ELEVENLABS_VOICE_ID }}
+          # Edge TTS is the default. Set TTS_ALLOW_ELEVENLABS=1 to
+          # enable ElevenLabs as a fallback when edge-tts fails.
+          # TTS_ALLOW_ELEVENLABS: "1"
+          # EDGE_TTS_VOICE: ${{ secrets.EDGE_TTS_VOICE }}   # uncomment to override
         run: |
           mkdir -p build
           python scripts/compose.py \

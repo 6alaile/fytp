@@ -5,3 +5,5 @@ elevenlabs>=0.2.0
 google-auth>=2.27
 google-auth-oauthlib>=1.2
 google-api-python-client>=2.120
+# Required: voiceover default. Microsoft Edge TTS, free, no API key.
+edge-tts>=6.1

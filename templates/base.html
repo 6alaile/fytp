@@ -3,14 +3,41 @@
   <head>
     <meta charset="UTF-8" />
     <title>__SCENE_ID__</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <style>
+      /* Local @font-face declarations — replace the previous Google Fonts
+         <link> to keep the renderer self-contained. Files live at
+         assets/fonts/ relative to the project root, symlinked into each
+         per-scene project at compose time. */
+      @font-face {
+        font-family: "Anton";
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+        src: url("fonts/Anton-Regular.woff2") format("woff2");
+      }
+      @font-face {
+        font-family: "Manrope";
+        font-weight: 300 700;
+        font-style: normal;
+        font-display: block;
+        src: url("fonts/Manrope-VariableFont_wght.woff2") format("woff2-variations");
+      }
+      @font-face {
+        font-family: "JetBrains Mono";
+        font-weight: 100 800;
+        font-style: normal;
+        font-display: block;
+        src: url("fonts/JetBrainsMono-VariableFont_wght.woff2") format("woff2-variations");
+      }
+      @font-face {
+        font-family: "Arial Narrow";
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+        src: url("fonts/ArialNarrow.woff2") format("woff2");
+      }
+
       :root {
         --bg: __BG__;
         --fg: __FG__;

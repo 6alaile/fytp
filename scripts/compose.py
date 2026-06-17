@@ -39,6 +39,23 @@ sys.path.insert(0, str(Path(__file__).parent))
 from spec_schema import load_and_validate, SpecError
 from kind_renderers import render_kind
 from fetchers import fetch_clip, download_file
+from voiceover import generate_voiceover
+
+# ─────────────────────────────────────────────────────────────────────
+# TTS dispatcher toggle
+#
+# Edge TTS is the default (free, no API key, requires `edge-tts`).
+# Set TTS_ALLOW_ELEVENLABS=1 to fall back to ElevenLabs if edge-tts
+# fails for a particular scene. Currently dormant because the
+# ElevenLabs free tier blocks library voices via the API (402).
+#
+# Edge TTS requires the `edge-tts` Python package:
+#   pip install edge-tts
+#
+# You can pick a voice via the EDGE_TTS_VOICE env var; default is
+# "en-US-GuyNeural". See `edge-tts --list-voices` for the full list.
+# ─────────────────────────────────────────────────────────────────────
+TTS_ALLOW_ELEVENLABS = os.environ.get("TTS_ALLOW_ELEVENLABS", "0") == "1"
 
 
 # ─────────────────────────────────────────────────────────────────────
@@ -58,14 +75,6 @@ DEFAULT_TTS = {
     "voice_id":  None,        # set via ELEVENLABS_VOICE_ID env var
     "stability": 0.45,
     "model_id":  "eleven_multilingual_v2",
-}
-
-# Tweak to taste, matches the legacy settings.
-ELEVENLABS_VOICE_SETTINGS = {
-    "stability": 0.45,
-    "similarity_boost": 0.80,
-    "style": 0.35,
-    "use_speaker_boost": True,
 }
 
 # Default ffmpeg re-encode (1-second GOP, yuv420p, faststart)
@@ -133,23 +142,34 @@ def main() -> int:
             print(f"  [skip] clip {scene['id']}.mp4 exists")
 
     # 3. Voiceover.
-    if voice_id and os.environ.get("ELEVENLABS_API_KEY"):
-        for scene in spec["scenes"]:
-            audio_path = audio_dir / f"{scene['id']}.mp3"
-            if not audio_path.exists():
-                generate_voiceover(scene["script"], audio_path, voice_id, tts)
-    else:
-        print("  ! no ELEVENLABS_* env — skipping voiceover (audio file will be missing)")
+    # Edge TTS is the default (free, no key). If TTS_ALLOW_ELEVENLABS=1
+    # and edge-tts fails for a scene, falls back to ElevenLabs. Dormant
+    # by default because the ElevenLabs free tier blocks library voices.
+    for scene in spec["scenes"]:
+        audio_path = audio_dir / f"{scene['id']}.mp3"
+        if audio_path.exists():
+            print(f"  [skip] audio {audio_path.name}")
+            continue
+        generate_voiceover(
+            scene["script"],
+            audio_path,
+            voice_id,
+            tts,
+            allow_elevenlabs=TTS_ALLOW_ELEVENLABS,
+        )
 
     # 4. Per-scene HTML.
     # HyperFrames expects <project>/index.html, so we mount each scene in
-    # its own subdirectory and symlink/copy the shared clips and audio.
+    # its own subdirectory and symlink/copy the shared clips, audio, and
+    # fonts.
+    repo_root = Path(__file__).parent.parent
+    shared_fonts = repo_root / "hf" / "assets" / "fonts"
     for i, scene in enumerate(spec["scenes"], 1):
         scene_proj = html_dir / f"scene_{i:02d}_{scene['kind']}"
         scene_proj.mkdir(parents=True, exist_ok=True)
         html_path = scene_proj / "index.html"
         html_path.write_text(render_scene_html(scene, spec, palette), encoding="utf-8")
-        # HyperFrames resolves the <video src="../clips/..."> relative to the
+        # HyperFrames resolves <video src="clips/..."> relative to the
         # html file's parent. Make the project contain a `clips/` and
         # `audio/` dir that resolve correctly.
         for asset_dir, suffix in [("clips", "mp4"), ("audio", "mp3")]:
@@ -163,6 +183,20 @@ def main() -> int:
                         os.symlink(src.resolve(), link)
                     except (OSError, NotImplementedError):
                         shutil.copyfile(src, link)
+
+        # Mirror the local fonts directory if present.
+        if shared_fonts.is_dir():
+            fonts_target = scene_proj / "fonts"
+            fonts_target.mkdir(exist_ok=True)
+            for f in shared_fonts.iterdir():
+                if not f.is_file():
+                    continue
+                link = fonts_target / f.name
+                if not link.exists():
+                    try:
+                        os.symlink(f.resolve(), link)
+                    except (OSError, NotImplementedError):
+                        shutil.copyfile(f, link)
 
     # 5. Per-scene render.
     rendered_any = False
@@ -217,23 +251,10 @@ def parse_args() -> argparse.Namespace:
 
 
 # ─────────────────────────────────────────────────────────────────────
-# Voiceover (ElevenLabs)
+# Voiceover — now lives in scripts/voiceover.py. The dispatcher
+# (generate_voiceover in voiceover.py) tries ElevenLabs first and
+# optionally falls back to edge-tts. See voiceover.py for details.
 # ─────────────────────────────────────────────────────────────────────
-def generate_voiceover(text: str, dest: Path, voice_id: str, tts: dict) -> None:
-    api_key = os.environ["ELEVENLABS_API_KEY"]
-    model_id = tts.get("model_id") or "eleven_multilingual_v2"
-    settings = {**ELEVENLABS_VOICE_SETTINGS, "stability": tts.get("stability", 0.45)}
-    r = requests.post(
-        f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}",
-        headers={"xi-api-key": api_key, "Content-Type": "application/json", "Accept": "audio/mpeg"},
-        json={"text": text, "model_id": model_id, "voice_settings": settings},
-        timeout=60,
-    )
-    if r.status_code != 200:
-        print(f"  ! TTS failed for {dest.name}: {r.status_code} {r.text[:200]}")
-        return
-    dest.write_bytes(r.content)
-    print(f"  ok voiceover {dest.name} ({dest.stat().st_size // 1024} KB)")
 
 
 # ─────────────────────────────────────────────────────────────────────
