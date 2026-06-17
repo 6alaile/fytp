@@ -165,13 +165,25 @@ def main() -> int:
                         shutil.copyfile(src, link)
 
     # 5. Per-scene render.
+    rendered_any = False
     for i, scene in enumerate(spec["scenes"], 1):
         scene_proj = html_dir / f"scene_{i:02d}_{scene['kind']}"
         mp4_path = render_dir / f"scene_{i:02d}_{scene['kind']}.mp4"
         if mp4_path.exists():
             print(f"  [skip] render {mp4_path.name}")
+            rendered_any = True
             continue
         run_hyperframes(scene_proj, mp4_path, args.hyperframes_version, args.quality)
+        if mp4_path.exists():
+            rendered_any = True
+
+    if not rendered_any:
+        print("FAIL: no rendered scenes (HyperFrames likely failed for every scene)", file=sys.stderr)
+        print("  Check the hyperframes stderr above. Common causes:", file=sys.stderr)
+        print("  - index.html missing a <video> or <audio> tag", file=sys.stderr)
+        print("  - the relative path under 'src=' doesn't resolve", file=sys.stderr)
+        print("  - the .mp4/.mp3 file is empty or undecodable", file=sys.stderr)
+        return 1
 
     # 6. Final xfade concat.
     final = out / f"{spec['id']}.mp4"
@@ -182,7 +194,10 @@ def main() -> int:
     if final.exists():
         print(f"  [skip] final {final.name}")
     else:
-        xfade_concat(scene_mp4s, final, xfade_s=args.xfade)
+        ok = xfade_concat(scene_mp4s, final, xfade_s=args.xfade)
+        if not ok or not final.exists():
+            print(f"FAIL: xfade concat did not produce {final}", file=sys.stderr)
+            return 1
 
     print(f"\nDONE: {final}")
     return 0
@@ -235,18 +250,17 @@ def reencode_clip(src: Path, dst: Path, duration_s: int | float) -> bool:
     return True
 
 
-def xfade_concat(clips: list[Path], dst: Path, xfade_s: float = 0.3) -> None:
+def xfade_concat(clips: list[Path], dst: Path, xfade_s: float = 0.3) -> bool:
     """Concatenate N clips with N-1 xfade transitions. Audio crossfades too.
 
-    For N == 1 there is nothing to crossfade. For N >= 2 we use the
-    recursive pairwise xfade that builds the chain one step at a time,
-    which is the simplest correct construction.
+    Returns True on success, False otherwise. The caller should check
+    dst.exists() to confirm; this function also does that internally.
     """
     n = len(clips)
     if n == 1:
         shutil.copyfile(clips[0], dst)
         print(f"  ok single-clip copy -> {dst.name}")
-        return
+        return dst.exists()
     if xfade_s <= 0:
         with open(dst.with_suffix(".list.txt"), "w") as f:
             for c in clips:
@@ -263,8 +277,9 @@ def xfade_concat(clips: list[Path], dst: Path, xfade_s: float = 0.3) -> None:
         if r.returncode != 0:
             print("  ! concat failed")
             print(r.stderr.decode(errors="replace")[-1000:])
-        return
-    _pairwise_xfade(clips, dst, xfade_s)
+            return False
+        return dst.exists()
+    return _pairwise_xfade(clips, dst, xfade_s)
 
 
 def _scene_dur(clip: Path) -> float:
@@ -279,8 +294,11 @@ def _scene_dur(clip: Path) -> float:
         return 10.0
 
 
-def _pairwise_xfade(clips: list[Path], dst: Path, xfade_s: float) -> None:
-    """Recursive xfade for N>2. Builds up a list of intermediate files."""
+def _pairwise_xfade(clips: list[Path], dst: Path, xfade_s: float) -> bool:
+    """Recursive xfade for N>2. Builds up a list of intermediate files.
+
+    Returns True on success, False on any ffmpeg failure.
+    """
     work = []
     queue = list(clips)
     while len(queue) > 1:
@@ -305,7 +323,10 @@ def _pairwise_xfade(clips: list[Path], dst: Path, xfade_s: float) -> None:
         if r.returncode != 0:
             print("  ! xfade failed")
             print(r.stderr.decode(errors="replace")[-1500:])
-            return
+            for w in work:
+                if w.exists():
+                    w.unlink()
+            return False
         work.append(out)
         queue.append(out)
     if work:
@@ -313,6 +334,7 @@ def _pairwise_xfade(clips: list[Path], dst: Path, xfade_s: float) -> None:
     for w in work:
         if w.exists():
             w.unlink()
+    return dst.exists()
 
 
 # ─────────────────────────────────────────────────────────────────────
