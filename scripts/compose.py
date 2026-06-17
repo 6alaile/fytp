@@ -142,18 +142,36 @@ def main() -> int:
         print("  ! no ELEVENLABS_* env — skipping voiceover (audio file will be missing)")
 
     # 4. Per-scene HTML.
+    # HyperFrames expects <project>/index.html, so we mount each scene in
+    # its own subdirectory and symlink/copy the shared clips and audio.
     for i, scene in enumerate(spec["scenes"], 1):
-        html_path = html_dir / f"scene_{i:02d}_{scene['kind']}.html"
+        scene_proj = html_dir / f"scene_{i:02d}_{scene['kind']}"
+        scene_proj.mkdir(parents=True, exist_ok=True)
+        html_path = scene_proj / "index.html"
         html_path.write_text(render_scene_html(scene, spec, palette), encoding="utf-8")
+        # HyperFrames resolves the <video src="../clips/..."> relative to the
+        # html file's parent. Make the project contain a `clips/` and
+        # `audio/` dir that resolve correctly.
+        for asset_dir, suffix in [("clips", "mp4"), ("audio", "mp3")]:
+            target = scene_proj / asset_dir
+            target.mkdir(exist_ok=True)
+            src = out / asset_dir / f"{scene['id']}.{suffix}"
+            if src.exists():
+                link = target / f"{scene['id']}.{suffix}"
+                if not link.exists():
+                    try:
+                        os.symlink(src.resolve(), link)
+                    except (OSError, NotImplementedError):
+                        shutil.copyfile(src, link)
 
     # 5. Per-scene render.
     for i, scene in enumerate(spec["scenes"], 1):
-        html_path = html_dir / f"scene_{i:02d}_{scene['kind']}.html"
+        scene_proj = html_dir / f"scene_{i:02d}_{scene['kind']}"
         mp4_path = render_dir / f"scene_{i:02d}_{scene['kind']}.mp4"
         if mp4_path.exists():
             print(f"  [skip] render {mp4_path.name}")
             continue
-        run_hyperframes(html_path, mp4_path, args.hyperframes_version, args.quality)
+        run_hyperframes(scene_proj, mp4_path, args.hyperframes_version, args.quality)
 
     # 6. Final xfade concat.
     final = out / f"{spec['id']}.mp4"
@@ -300,21 +318,19 @@ def _pairwise_xfade(clips: list[Path], dst: Path, xfade_s: float) -> None:
 # ─────────────────────────────────────────────────────────────────────
 # HyperFrames render
 # ─────────────────────────────────────────────────────────────────────
-def run_hyperframes(html: Path, mp4: Path, version: str, quality: str) -> None:
-    # HyperFrames requires html to be in a directory; we use html.parent as
-    # the "project" root and pass html path relative to it.
-    proj = html.parent
-    rel_html = html.name
+def run_hyperframes(project: Path, mp4: Path, version: str, quality: str) -> None:
+    # HyperFrames expects a project directory containing index.html at the
+    # root, with relative paths (e.g. <video src="clips/...">) resolving
+    # from that index. We mounted each scene in its own subdirectory above.
     cmd = [
-        "npx", "--yes", f"hyperframes@{version}", "render", str(proj),
-        "--entry", rel_html,
+        "npx", "--yes", f"hyperframes@{version}", "render", str(project),
         "--output", str(mp4),
         "--quality", quality,
     ]
     print(f"  $ {subprocess.list2cmdline(cmd)}")
     r = subprocess.run(cmd)
     if r.returncode != 0:
-        print(f"  ! hyperframes render failed for {html.name}")
+        print(f"  ! hyperframes render failed for {project.name}")
 
 
 # ─────────────────────────────────────────────────────────────────────
