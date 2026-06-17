@@ -29,6 +29,7 @@ import os
 import shutil
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
 
@@ -199,7 +200,13 @@ def main() -> int:
                         shutil.copyfile(f, link)
 
     # 5. Per-scene render.
+    # Run renders in parallel. Each npx hyperframes render is a single
+    # Chrome-driven capture process, so concurrent renders scale near-
+    # linearly up to the CI runner's headroom. The default parallelism is
+    # min(2, scene_count) — low-memory CI runners thrash at higher
+    # concurrency. Set RENDER_PARALLEL=N to override.
     rendered_any = False
+    render_jobs = []  # list of (scene_proj, mp4_path)
     for i, scene in enumerate(spec["scenes"], 1):
         scene_proj = html_dir / f"scene_{i:02d}_{scene['kind']}"
         mp4_path = render_dir / f"scene_{i:02d}_{scene['kind']}.mp4"
@@ -207,9 +214,25 @@ def main() -> int:
             print(f"  [skip] render {mp4_path.name}")
             rendered_any = True
             continue
-        run_hyperframes(scene_proj, mp4_path, args.hyperframes_version, args.quality)
-        if mp4_path.exists():
-            rendered_any = True
+        render_jobs.append((scene_proj, mp4_path))
+
+    if render_jobs:
+        max_parallel = int(os.environ.get("RENDER_PARALLEL", "2"))
+        max_parallel = max(1, min(max_parallel, len(render_jobs)))
+        print(f"  rendering {len(render_jobs)} scenes with {max_parallel} parallel workers")
+        with ThreadPoolExecutor(max_workers=max_parallel) as pool:
+            futures = {
+                pool.submit(run_hyperframes, proj, mp4, args.hyperframes_version, args.quality): mp4
+                for proj, mp4 in render_jobs
+            }
+            for fut in as_completed(futures):
+                mp4 = futures[fut]
+                if not fut.exception():
+                    print(f"  ok render {mp4.name}")
+                else:
+                    print(f"  ! render {mp4.name} raised: {fut.exception()}")
+                if mp4.exists():
+                    rendered_any = True
 
     if not rendered_any:
         print("FAIL: no rendered scenes (HyperFrames likely failed for every scene)", file=sys.stderr)
@@ -365,8 +388,9 @@ def run_hyperframes(project: Path, mp4: Path, version: str, quality: str) -> Non
     # HyperFrames expects a project directory containing index.html at the
     # root, with relative paths (e.g. <video src="clips/...">) resolving
     # from that index. We mounted each scene in its own subdirectory above.
+    npx = shutil.which("npx") or "npx"
     cmd = [
-        "npx", "--yes", f"hyperframes@{version}", "render", str(project),
+        npx, "--yes", f"hyperframes@{version}", "render", str(project),
         "--output", str(mp4),
         "--quality", quality,
     ]
