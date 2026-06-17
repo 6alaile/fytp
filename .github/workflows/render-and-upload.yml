@@ -86,11 +86,24 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg fonts-dejavu fonts-liberation jq
-          # HyperFrames v0.6.103 wants chrome-headless-shell for the optimized
-          # capture path. The 'system' Chrome fallback works but is slower
-          # and uses screenshot mode.
+          # HyperFrames' perf-optimized capture path needs chrome-headless-shell
+          # (HeadlessExperimental.beginFrame). Without it, falls back to screenshot
+          # mode in regular Chrome, which is ~6-8× slower per frame.
           npx --yes @puppeteer/browsers install chrome-headless-shell@stable
-          echo "HYPERFRAMES_BROWSER_PATH=$(ls ~/.cache/puppeteer/chrome-headless-shell/*/chrome-headless-shell-linux64/chrome-headless-shell | head -1)" >> "$GITHUB_ENV"
+          # The intermediate dir layout from @puppeteer/browsers has changed
+          # between releases; the previous glob missed on some runner images
+          # and HYPERFRAMES_BROWSER_PATH ended up empty, falling back to
+          # /usr/bin/google-chrome and screenshot mode. find() the binary
+          # directly and assert it's executable.
+          CHS_BIN=$(find ~/.cache/puppeteer/chrome-headless-shell -type f -name chrome-headless-shell -print -quit)
+          if [ -z "$CHS_BIN" ]; then
+            echo "ERROR: chrome-headless-shell not found after install"
+            find ~/.cache/puppeteer -maxdepth 4 -type d 2>/dev/null || true
+            exit 1
+          fi
+          chmod +x "$CHS_BIN"
+          echo "HYPERFRAMES_BROWSER_PATH=$CHS_BIN" >> "$GITHUB_ENV"
+          echo "Resolved chrome-headless-shell: $CHS_BIN"
 
       - name: Install Python dependencies
         run: pip install -r requirements.txt
@@ -114,11 +127,25 @@ jobs:
           PEXELS_API_KEY:        ${{ secrets.PEXELS_API_KEY }}
           ELEVENLABS_API_KEY:    ${{ secrets.ELEVENLABS_API_KEY }}
           ELEVENLABS_VOICE_ID:   ${{ secrets.ELEVENLABS_VOICE_ID }}
+          # Render scenes in parallel; each npx hyperframes render is its
+          # own Chrome process. 2 is safe on 7GB runners; bump on larger
+          # boxes.
+          RENDER_PARALLEL: "2"
           # Edge TTS is the default. Set TTS_ALLOW_ELEVENLABS=1 to
           # enable ElevenLabs as a fallback when edge-tts fails.
           # TTS_ALLOW_ELEVENLABS: "1"
           # EDGE_TTS_VOICE: ${{ secrets.EDGE_TTS_VOICE }}   # uncomment to override
         run: |
+          # Assert chrome-headless-shell is wired up. If HYPERFRAMES_BROWSER_PATH
+          # is empty here, the install step's glob missed and we're about to
+          # fall back to system Chrome in screenshot mode (~6-8× slower).
+          if [ -z "$HYPERFRAMES_BROWSER_PATH" ] || [ ! -x "$HYPERFRAMES_BROWSER_PATH" ]; then
+            echo "ERROR: HYPERFRAMES_BROWSER_PATH is not set or binary missing"
+            echo "  HYPERFRAMES_BROWSER_PATH='$HYPERFRAMES_BROWSER_PATH'"
+            find ~/.cache/puppeteer -maxdepth 5 -name chrome-headless-shell 2>/dev/null || true
+            exit 1
+          fi
+          echo "HyperFrames browser: $HYPERFRAMES_BROWSER_PATH"
           mkdir -p build
           python scripts/compose.py \
             --spec "${{ steps.spec.outputs.spec }}" \
