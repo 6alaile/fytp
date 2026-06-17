@@ -1,0 +1,156 @@
+{
+  "id": "example",
+  "youtube": {
+    "title": "Example Spec — Replace With Your Own",
+    "description": "This is the minimal reference spec showing every supported scene kind. Use it as a template for new videos.",
+    "tags": ["example", "template", "reference"],
+    "privacy": "private",
+    "category_id": "17"
+  },
+  "scenes": [
+    {
+      "id": "01_hook",
+      "kind": "hook",
+      "duration_s": 6,
+      "source": "pixabay",
+      "query": "cinematic abstract",
+      "script": "One short line that hooks the viewer. Keep it under 12 seconds of speech.",
+      "eyebrow": "// THE PREMISE",
+      "headline": "BIG CLAIM<br />RIGHT <accent>HERE.</accent>",
+      "subhead": "// HOOK · PROMISE · WHY CARE",
+      "pill": "PROOF",
+      "top_label": "01 — INTRO",
+      "bottom_label": "EXPLAINER"
+    },
+    {
+      "id": "02_scale",
+      "kind": "scale",
+      "duration_s": 12,
+      "source": "pixabay",
+      "query": "data dashboard",
+      "script": "Three or four big numbers, with one short sentence each. Set the scale of the topic.",
+      "eyebrow": "// THE NUMBERS",
+      "headline": "BIGGER THAN<br />YOU <accent>THINK.</accent>",
+      "sub": "Optional one-liner beneath the headline.",
+      "stats": [
+        { "num": "1", "label": "FIRST" },
+        { "num": "2", "label": "SECOND" },
+        { "num": "3", "label": "THIRD" },
+        { "num": "4", "label": "FOURTH" }
+      ],
+      "top_label": "02 — THE SCALE",
+      "bottom_label": "EXAMPLE"
+    },
+    {
+      "id": "03_portrait",
+      "kind": "portrait",
+      "duration_s": 12,
+      "source": "pixabay",
+      "query": "duo portrait",
+      "script": "Introduce two people side by side. Could be rivals, partners, or the same person at two times.",
+      "eyebrow": "// TWO OF THEM",
+      "headline": "THE<br /><accent>FACES.</accent>",
+      "sub": "Optional context line.",
+      "names": [
+        { "name": "ALICE", "year": "BORN 1990" },
+        { "name": "BOB", "year": "BORN 1992" }
+      ],
+      "top_label": "03 — THE PAIR",
+      "bottom_label": "EXAMPLE"
+    },
+    {
+      "id": "04_record",
+      "kind": "record",
+      "duration_s": 10,
+      "source": "pixabay",
+      "query": "stopwatch countdown",
+      "script": "A single big counter that lands. Optional quote on the right.",
+      "counter_label": "DAYS UNTIL",
+      "counter_num": "42",
+      "counter_suffix": "THE RECORD — 100 UNITS",
+      "name": "THE HUNTER.",
+      "quote": "Optional supporting line. Italic-friendly.",
+      "top_label": "04 — THE COUNT",
+      "bottom_label": "EXAMPLE",
+      "pill": "LIVE"
+    },
+    {
+      "id": "05_grid",
+      "kind": "grid",
+      "duration_s": 14,
+      "source": "pixabay",
+      "query": "team group",
+      "script": "Three or more subjects with parallel structure. Use grid for hosts, finalists, candidates, etc.",
+      "eyebrow": "// THE LINEUP",
+      "headline": "THE <accent>LINEUP.</accent>",
+      "cards": [
+        {
+          "flag": "🇦🇱",
+          "name": "ALPHA",
+          "stats": ["Stat line 1", "Stat line 2", "Stat line 3"],
+          "quote": "Optional italic quote."
+        },
+        {
+          "flag": "🇧🇷",
+          "name": "BRAVO",
+          "stats": ["Stat line 1", "Stat line 2", "Stat line 3"],
+          "quote": "Optional italic quote."
+        },
+        {
+          "flag": "🇨🇦",
+          "name": "CHARLIE",
+          "stats": ["Stat line 1", "Stat line 2", "Stat line 3"],
+          "quote": "Optional italic quote."
+        }
+      ],
+      "top_label": "05 — THE LINEUP",
+      "bottom_label": "EXAMPLE"
+    },
+    {
+      "id": "06_quote",
+      "kind": "quote",
+      "duration_s": 8,
+      "source": "pixabay",
+      "query": "spotlight stage",
+      "script": "One big quotation. Use for thesis, epitaph, or a single-sentence reveal.",
+      "eyebrow": "// THE LINE",
+      "quote": "ONE SENTENCE<br />THAT <accent>LANDS.</accent>",
+      "attribution": "— WHO SAID IT",
+      "sub": "Optional context line below the attribution.",
+      "top_label": "06 — THE LINE",
+      "bottom_label": "EXAMPLE"
+    },
+    {
+      "id": "07_list",
+      "kind": "list",
+      "duration_s": 12,
+      "source": "pixabay",
+      "query": "checklist list",
+      "script": "A short numbered list. Use for arguments, factors, takeaways.",
+      "eyebrow": "// THE LIST",
+      "headline": "FIVE<br /><accent>POINTS.</accent>",
+      "items": [
+        "First point goes here",
+        "Second point goes here",
+        "Third point goes here",
+        "Fourth point goes here"
+      ],
+      "top_label": "07 — THE LIST",
+      "bottom_label": "EXAMPLE"
+    },
+    {
+      "id": "08_split",
+      "kind": "split",
+      "duration_s": 10,
+      "source": "pixabay",
+      "query": "image one",
+      "image_query": "wide dramatic photo of a stadium",
+      "script": "Two-column layout: text on the left, image on the right. Use for sidebars, definitions, or one-liner reveals.",
+      "eyebrow": "// THE SIDEBAR",
+      "headline": "ONE SIDE.<br /><accent>OTHER SIDE.</accent>",
+      "body": "Body copy explaining the headline. Two or three short sentences works best.",
+      "top_label": "08 — THE SIDEBAR",
+      "bottom_label": "EXAMPLE"
+    }
+  ]
+}

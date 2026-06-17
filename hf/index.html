@@ -1,0 +1,1146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>The 2026 World Cup Is About to Break Everything</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --fg: #f5f5f0;
+        --accent: #ffd700;
+        --accent-dim: #b8980a;
+        --rule: #2a2a2a;
+        --muted: #888;
+        --danger: #e63946;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: "Manrope", system-ui, sans-serif;
+        font-weight: 350;
+        font-size: 28px;
+        line-height: 1.35;
+        letter-spacing: 0.005em;
+        overflow: hidden;
+        width: 1920px;
+        height: 1080px;
+      }
+
+      /* Display font — Anton: heavy condensed sports-poster voice */
+      .display,
+      .display * {
+        font-family: "Anton", "Bebas Neue", "Arial Narrow", sans-serif;
+        font-weight: 400;
+        letter-spacing: -0.005em;
+        line-height: 0.92;
+        text-transform: uppercase;
+      }
+
+      .mono,
+      .mono * {
+        font-family: "JetBrains Mono", "Courier New", monospace;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0;
+      }
+
+      /* ─────────────────────────────────────────────
+         SCENE STACK
+         ───────────────────────────────────────────── */
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+
+      /* Scene 1 visible; scenes 2+ hidden until revealed */
+      #scene1 { z-index: 1; }
+      #scene2,
+      #scene3,
+      #scene4,
+      #scene5,
+      #scene6,
+      #scene7,
+      #scene8 {
+        z-index: 2;
+        opacity: 0;
+      }
+
+      /* ─────────────────────────────────────────────
+         SHARED SCENE LAYOUT
+         scene-content fills scene, padding positions, flex for vertical rhythm
+         ───────────────────────────────────────────── */
+      .scene-content {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        padding: 100px 120px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 32px;
+        z-index: 3;
+      }
+
+      .scene-video {
+        position: absolute;
+        inset: 0;
+        width: 1920px;
+        height: 1080px;
+        object-fit: cover;
+        z-index: 1;
+        /* darken footage so text always reads */
+        filter: brightness(0.55) saturate(0.7);
+      }
+
+      .scene-vignette {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        background:
+          radial-gradient(ellipse 80% 60% at 50% 50%, rgba(10, 10, 10, 0.35), rgba(10, 10, 10, 0.85) 100%),
+          linear-gradient(180deg, rgba(10, 10, 10, 0.4) 0%, rgba(10, 10, 10, 0.1) 30%, rgba(10, 10, 10, 0.7) 100%);
+        pointer-events: none;
+      }
+
+      .scene-glow {
+        position: absolute;
+        width: 1400px;
+        height: 1400px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 215, 0, 0.12) 0%, rgba(255, 215, 0, 0) 60%);
+        z-index: 2;
+        pointer-events: none;
+      }
+
+      /* Top metadata bar (always on) */
+      .top-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        padding: 0 120px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 5;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 18px;
+        color: var(--muted);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--rule);
+      }
+      .top-bar .mark {
+        color: var(--accent);
+        font-weight: 700;
+      }
+
+      /* Bottom ticker (data labels) */
+      .bottom-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 80px;
+        padding: 0 120px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 5;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 20px;
+        color: var(--muted);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        border-top: 1px solid var(--rule);
+      }
+      .bottom-bar .pill {
+        color: var(--accent);
+        padding: 6px 14px;
+        border: 1px solid var(--accent);
+        border-radius: 2px;
+      }
+
+      /* ─────────────────────────────────────────────
+         SCENE 1 — HOOK
+         ───────────────────────────────────────────── */
+      #scene1 .scene-content { align-items: center; text-align: center; gap: 0; }
+      #scene1 .eyebrow {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 24px;
+        color: var(--accent);
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        margin-bottom: 24px;
+      }
+      #scene1 .headline {
+        font-size: 170px;
+        color: var(--fg);
+      }
+      #scene1 .headline .accent { color: var(--accent); }
+      #scene1 .subhead {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 28px;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-top: 32px;
+      }
+      #scene1 .rule {
+        width: 0;
+        height: 4px;
+        background: var(--accent);
+        margin: 24px 0;
+      }
+
+      /* ─────────────────────────────────────────────
+         SCENE 2 — SCALE
+         ───────────────────────────────────────────── */
+      #scene2 .scene-content { padding: 0 120px; flex-direction: row; align-items: stretch; gap: 80px; }
+      #scene2 .left {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 40px;
+      }
+      #scene2 .eyebrow {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 22px;
+        color: var(--accent);
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+      }
+      #scene2 .headline {
+        font-size: 150px;
+        color: var(--fg);
+      }
+      #scene2 .sub {
+        font-size: 36px;
+        color: var(--fg);
+        max-width: 720px;
+        line-height: 1.3;
+      }
+      #scene2 .right {
+        flex: 0 0 700px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 24px;
+      }
+      #scene2 .stat {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 24px 32px;
+        border-left: 4px solid var(--accent);
+        background: rgba(255, 215, 0, 0.04);
+      }
+      #scene2 .stat .num {
+        font-size: 110px;
+        color: var(--accent);
+        line-height: 0.9;
+      }
+      #scene2 .stat .label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 22px;
+        color: var(--fg);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      /* ─────────────────────────────────────────────
+         SCENE 3 — LAST DANCE (cinematic, slower)
+         ───────────────────────────────────────────── */
+      #scene3 .scene-content { align-items: center; text-align: center; }
+      #scene3 .eyebrow {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 22px;
+        color: var(--accent);
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        margin-bottom: 24px;
+      }
+      #scene3 .headline {
+        font-size: 220px;
+        color: var(--fg);
+      }
+      #scene3 .sub {
+        font-size: 38px;
+        color: var(--fg);
+        max-width: 1100px;
+        margin-top: 24px;
+        font-style: italic;
+        font-weight: 300;
+      }
+      #scene3 .names {
+        display: flex;
+        gap: 80px;
+        margin-top: 40px;
+        align-items: center;
+        justify-content: center;
+      }
+      #scene3 .name {
+        font-size: 80px;
+        color: var(--accent);
+      }
+      #scene3 .name .year {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 24px;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+        display: block;
+        margin-top: 8px;
+      }
+      #scene3 .vs {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 32px;
+        color: var(--muted);
+      }
+      #scene3 .line {
+        width: 0;
+        height: 2px;
+        background: var(--accent);
+        margin: 24px auto;
+      }
+
+      /* ─────────────────────────────────────────────
+         SCENE 4 — MBAPPÉ (slam back to high energy)
+         ───────────────────────────────────────────── */
+      #scene4 .scene-content { padding: 0 120px; flex-direction: row; align-items: center; gap: 80px; }
+      #scene4 .counter-wrap {
+        flex: 0 0 900px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 60px;
+        border: 4px solid var(--accent);
+        background: rgba(255, 215, 0, 0.05);
+      }
+      #scene4 .counter-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 24px;
+        color: var(--accent);
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+      }
+      #scene4 .counter {
+        font-size: 380px;
+        color: var(--accent);
+        line-height: 0.85;
+      }
+      #scene4 .counter-suffix {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 36px;
+        color: var(--fg);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-top: 16px;
+      }
+      #scene4 .right {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+      }
+      #scene4 .name {
+        font-size: 130px;
+        color: var(--fg);
+      }
+      #scene4 .age {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 32px;
+        color: var(--accent);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+      }
+      #scene4 .quote {
+        font-size: 36px;
+        color: var(--fg);
+        line-height: 1.3;
+        border-left: 4px solid var(--accent);
+        padding-left: 24px;
+        margin-top: 24px;
+      }
+
+      /* ─────────────────────────────────────────────
+         SCENE 5 — HOSTS (three-column flags)
+         ───────────────────────────────────────────── */
+      #scene5 .scene-content { padding: 0 120px; align-items: stretch; }
+      #scene5 .eyebrow {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 22px;
+        color: var(--accent);
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+      }
+      #scene5 .headline {
+        font-size: 110px;
+        color: var(--fg);
+        margin-bottom: 32px;
+      }
+      #scene5 .host-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 40px;
+        flex: 1;
+      }
+      #scene5 .host-card {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 40px 32px;
+        background: rgba(255, 255, 255, 0.03);
+        border-top: 6px solid var(--accent);
+      }
+      #scene5 .flag {
+        font-size: 90px;
+        line-height: 1;
+        filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+      }
+      #scene5 .host-name {
+        font-size: 64px;
+        color: var(--fg);
+      }
+      #scene5 .host-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-top: auto;
+      }
+      #scene5 .host-stat {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 20px;
+        color: var(--muted);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      #scene5 .host-stat .v { color: var(--fg); }
+      #scene5 .host-quote {
+        font-size: 22px;
+        color: var(--accent);
+        line-height: 1.3;
+        font-style: italic;
+        margin-top: 12px;
+      }
+
+      /* ─────────────────────────────────────────────
+         SCENE 6 — NEW WORLD (debutant nations)
+         ───────────────────────────────────────────── */
+      #scene6 .scene-content { padding: 0 120px; align-items: center; text-align: center; }
+      #scene6 .eyebrow {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 22px;
+        color: var(--accent);
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+      }
+      #scene6 .headline {
+        font-size: 130px;
+        color: var(--fg);
+        margin-bottom: 16px;
+      }
+      #scene6 .sub {
+        font-size: 34px;
+        color: var(--fg);
+        max-width: 1200px;
+        margin-bottom: 32px;
+      }
+      #scene6 .nations {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        justify-content: center;
+        max-width: 1600px;
+      }
+      #scene6 .nation {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 28px;
+        background: rgba(255, 215, 0, 0.08);
+        border: 1px solid var(--accent);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 32px;
+        color: var(--fg);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      #scene6 .nation .new {
+        color: var(--accent);
+        font-size: 18px;
+        letter-spacing: 0.2em;
+      }
+
+      /* ─────────────────────────────────────────────
+         SCENE 7 — VERDICT (cinematic swell)
+         ───────────────────────────────────────────── */
+      #scene7 .scene-content { align-items: center; text-align: center; }
+      #scene7 .eyebrow {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 22px;
+        color: var(--accent);
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+      }
+      #scene7 .headline {
+        font-size: 170px;
+        color: var(--fg);
+      }
+      #scene7 .sub {
+        font-size: 42px;
+        color: var(--fg);
+        max-width: 1200px;
+        margin-top: 24px;
+        line-height: 1.3;
+      }
+      #scene7 .date {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 36px;
+        color: var(--accent);
+        letter-spacing: 0.2em;
+        margin-top: 32px;
+      }
+      #scene7 .trophy {
+        position: absolute;
+        bottom: 100px;
+        right: 100px;
+        font-size: 180px;
+        opacity: 0.15;
+      }
+
+      /* ─────────────────────────────────────────────
+         SCENE 8 — CTA (clean outro)
+         ───────────────────────────────────────────── */
+      #scene8 .scene-content { align-items: center; text-align: center; }
+      #scene8 .badge {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 22px;
+        color: var(--accent);
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        margin-bottom: 24px;
+        padding: 12px 32px;
+        border: 2px solid var(--accent);
+      }
+      #scene8 .headline {
+        font-size: 180px;
+        color: var(--fg);
+      }
+      #scene8 .sub {
+        font-size: 36px;
+        color: var(--fg);
+        margin-top: 24px;
+      }
+      #scene8 .subscribe-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 16px;
+        margin-top: 48px;
+        padding: 24px 64px;
+        background: var(--accent);
+        color: var(--bg);
+        font-family: "Anton", sans-serif;
+        font-size: 56px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      #scene8 .sub-bottom {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 22px;
+        color: var(--muted);
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        margin-top: 24px;
+      }
+
+      /* ─────────────────────────────────────────────
+         SHARED DECORATIVE: data rule line
+         ───────────────────────────────────────────── */
+      .gold-rule {
+        position: absolute;
+        background: var(--accent);
+        z-index: 4;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="world-cup-2026"
+      data-width="1920"
+      data-height="1080"
+      data-start="0"
+      data-duration="168.0"
+    >
+      <!-- ──────────── SCENE 1: HOOK ──────────── -->
+      <div id="scene1" class="scene">
+        <video
+          id="vid-scene1"
+          class="scene-video"
+          src="assets/clips/01_hook_processed.mp4"
+          muted
+          playsinline
+          data-start="0"
+          data-duration="7.0"
+          data-track-index="0"
+        ></video>
+        <div class="scene-vignette"></div>
+        <div class="top-bar">
+          <span><span class="mark">●</span>&nbsp;&nbsp;LIVE — FIFA WORLD CUP 2026</span>
+          <span>CH 01 / 08</span>
+        </div>
+        <div class="scene-content">
+          <div class="eyebrow" id="s1-eyebrow">// THE RECKONING</div>
+          <h1 class="display headline" id="s1-headline">
+            EVERY WORLD CUP<br />
+            GETS CALLED <span class="accent">HISTORIC.</span>
+          </h1>
+          <div class="gold-rule" id="s1-rule" style="left: 50%; top: 50%; transform: translate(-50%, -50%); width: 0; height: 4px;"></div>
+          <h1 class="display headline" id="s1-headline2" style="margin-top: -8px;">
+            THIS ONE <span class="accent">ACTUALLY IS.</span>
+          </h1>
+          <div class="subhead" id="s1-subhead">// 4 MINUTES &nbsp;//&nbsp; 8 REASONS &nbsp;//&nbsp; 1 VERDICT</div>
+        </div>
+        <div class="bottom-bar">
+          <span>JUNE 11, 2026 — JULY 19, 2026</span>
+          <span class="pill" id="s1-pill">PROOF</span>
+        </div>
+      </div>
+
+      <!-- ──────────── SCENE 2: SCALE ──────────── -->
+      <div id="scene2" class="scene">
+        <video
+          id="vid-scene2"
+          class="scene-video"
+          src="assets/clips/02_scale_processed.mp4"
+          muted
+          playsinline
+          data-start="7.0"
+          data-duration="22.0"
+          data-track-index="0"
+        ></video>
+        <div class="scene-vignette"></div>
+        <div class="top-bar">
+          <span><span class="mark">●</span>&nbsp;&nbsp;01 — THE SCALE</span>
+          <span>00:08 / 02:48</span>
+        </div>
+        <div class="scene-content">
+          <div class="left">
+            <div class="eyebrow" id="s2-eyebrow">// THE ANIMAL IS DIFFERENT</div>
+            <h2 class="display headline" id="s2-headline">
+              BIGGER<br />THAN<br />EVERY CUP<br /><span class="accent">BEFORE.</span>
+            </h2>
+            <p class="sub" id="s2-sub">A completely different tournament. The largest single sporting event on Earth.</p>
+          </div>
+          <div class="right">
+            <div class="stat" id="s2-stat1">
+              <span class="num">48</span>
+              <span class="label">NATIONS</span>
+            </div>
+            <div class="stat" id="s2-stat2">
+              <span class="num">104</span>
+              <span class="label">MATCHES</span>
+            </div>
+            <div class="stat" id="s2-stat3">
+              <span class="num">16</span>
+              <span class="label">HOST CITIES</span>
+            </div>
+            <div class="stat" id="s2-stat4">
+              <span class="num">3</span>
+              <span class="label">COUNTRIES</span>
+            </div>
+          </div>
+        </div>
+        <div class="bottom-bar">
+          <span>FIFA WORLD CUP — FORMAT REFORM</span>
+          <span>USA · CAN · MEX</span>
+        </div>
+      </div>
+
+      <!-- ──────────── SCENE 3: LAST DANCE ──────────── -->
+      <div id="scene3" class="scene">
+        <video
+          id="vid-scene3"
+          class="scene-video"
+          src="assets/clips/03_last_dance_processed.mp4"
+          muted
+          playsinline
+          data-start="29.0"
+          data-duration="32.0"
+          data-track-index="0"
+        ></video>
+        <div class="scene-vignette"></div>
+        <div class="scene-glow" id="s3-glow" style="left: -400px; top: -200px;"></div>
+        <div class="top-bar">
+          <span><span class="mark">●</span>&nbsp;&nbsp;02 — THE LAST DANCE</span>
+          <span>00:30 / 02:48</span>
+        </div>
+        <div class="scene-content">
+          <div class="eyebrow" id="s3-eyebrow">// TWO MEN. ONE ERA. THE FINAL ACT.</div>
+          <h2 class="display headline" id="s3-headline">THE LAST<br /><span class="accent">DANCE.</span></h2>
+          <div class="gold-rule" id="s3-rule" style="left: 50%; transform: translateX(-50%); width: 0; height: 2px; top: 50%;"></div>
+          <p class="sub" id="s3-sub">Messi and Ronaldo defined a generation of football. This is almost certainly the last time they share a World Cup stage.</p>
+          <div class="names" id="s3-names">
+            <div class="display name">MESSI<span class="year mono">AGE 38 · 2022 CHAMPION</span></div>
+            <div class="vs mono">VS</div>
+            <div class="display name">RONALDO<span class="year mono">AGE 41 · 5 GOLDEN BOOTS</span></div>
+          </div>
+        </div>
+        <div class="bottom-bar">
+          <span>THE TWILIGHT ERA</span>
+          <span>2026 — THE FINALE</span>
+        </div>
+      </div>
+
+      <!-- ──────────── SCENE 4: MBAPPÉ ──────────── -->
+      <div id="scene4" class="scene">
+        <video
+          id="vid-scene4"
+          class="scene-video"
+          src="assets/clips/04_mbappe_processed.mp4"
+          muted
+          playsinline
+          data-start="61.0"
+          data-duration="24.0"
+          data-track-index="0"
+        ></video>
+        <div class="scene-vignette"></div>
+        <div class="top-bar">
+          <span><span class="mark">●</span>&nbsp;&nbsp;03 — THE RECORD CHASE</span>
+          <span>01:02 / 02:48</span>
+        </div>
+        <div class="scene-content">
+          <div class="counter-wrap" id="s4-counter">
+            <div class="counter-label">GOALS FROM THE RECORD</div>
+            <div class="display counter" id="s4-counter-num">4</div>
+            <div class="counter-suffix">MIROSLAV KLOSE — 16 GOALS</div>
+          </div>
+          <div class="right">
+            <div class="age" id="s4-age">// THE HUNTER</div>
+            <h2 class="display name" id="s4-name">MBAPPÉ.</h2>
+            <p class="quote" id="s4-quote">"He is 27 years old. Klose was 36 when he retired. Let that sink in."</p>
+          </div>
+        </div>
+        <div class="bottom-bar">
+          <span>FRANCE · CAPTAIN</span>
+          <span class="pill">RECORD IN SIGHT</span>
+        </div>
+      </div>
+
+      <!-- ──────────── SCENE 5: HOSTS ──────────── -->
+      <div id="scene5" class="scene">
+        <video
+          id="vid-scene5"
+          class="scene-video"
+          src="assets/clips/05_hosts_processed.mp4"
+          muted
+          playsinline
+          data-start="85.0"
+          data-duration="35.0"
+          data-track-index="0"
+        ></video>
+        <div class="scene-vignette"></div>
+        <div class="top-bar">
+          <span><span class="mark">●</span>&nbsp;&nbsp;04 — THE HOSTS</span>
+          <span>01:26 / 02:48</span>
+        </div>
+        <div class="scene-content">
+          <div class="eyebrow" id="s5-eyebrow">// THREE NATIONS. ONE PRESSURE.</div>
+          <h2 class="display headline" id="s5-headline">THE HOME <span class="accent">FRONT.</span></h2>
+          <div class="host-grid" id="s5-grid">
+            <div class="host-card" id="s5-card1">
+              <div class="flag">🇺🇸</div>
+              <div class="display host-name">USA</div>
+              <div class="host-stats">
+                <div class="host-stat"><span class="v">Pochettino</span> · Manager</div>
+                <div class="host-stat">Group <span class="v">D</span> · Rd 1 vs PAR</div>
+                <div class="host-stat">Best finish: <span class="v">QTR 2002</span></div>
+              </div>
+              <div class="host-quote">"The US can win it."</div>
+            </div>
+            <div class="host-card" id="s5-card2">
+              <div class="flag">🇨🇦</div>
+              <div class="display host-name">CANADA</div>
+              <div class="host-stats">
+                <div class="host-stat"><span class="v">Marsch</span> · Manager</div>
+                <div class="host-stat">Group <span class="v">B</span> · Rd 1 vs CMR</div>
+                <div class="host-stat">Best finish: <span class="v">GROUP 2022</span></div>
+              </div>
+              <div class="host-quote">"First men's WC since 1986."</div>
+            </div>
+            <div class="host-card" id="s5-card3">
+              <div class="flag">🇲🇽</div>
+              <div class="display host-name">MEXICO</div>
+              <div class="host-stats">
+                <div class="host-stat"><span class="v">Aguirre</span> · Manager</div>
+                <div class="host-stat">Group <span class="v">A</span> · Rd 1 vs SWE</div>
+                <div class="host-stat">Best finish: <span class="v">QTR 1970/86</span></div>
+              </div>
+              <div class="host-quote">"El Tri. Home soil."</div>
+            </div>
+          </div>
+        </div>
+        <div class="bottom-bar">
+          <span>THREE HOSTS — ONE CONTINENT</span>
+          <span>NORTH AMERICA</span>
+        </div>
+      </div>
+
+      <!-- ──────────── SCENE 6: NEW WORLD ──────────── -->
+      <div id="scene6" class="scene">
+        <video
+          id="vid-scene6"
+          class="scene-video"
+          src="assets/clips/06_new_world_processed.mp4"
+          muted
+          playsinline
+          data-start="120.0"
+          data-duration="20.0"
+          data-track-index="0"
+        ></video>
+        <div class="scene-vignette"></div>
+        <div class="scene-glow" id="s6-glow" style="right: -400px; top: -200px;"></div>
+        <div class="top-bar">
+          <span><span class="mark">●</span>&nbsp;&nbsp;05 — DEBUTANTS</span>
+          <span>02:01 / 02:48</span>
+        </div>
+        <div class="scene-content">
+          <div class="eyebrow" id="s6-eyebrow">// FOOTBALL'S EXPANDING UNIVERSE</div>
+          <h2 class="display headline" id="s6-headline">A <span class="accent">NEW WORLD.</span></h2>
+          <p class="sub" id="s6-sub">First-time nations. Players from islands and steppes the World Cup has never seen.</p>
+          <div class="nations" id="s6-nations">
+            <div class="nation"><span class="new">DEBUT</span> CAPE VERDE</div>
+            <div class="nation"><span class="new">DEBUT</span> CURAÇAO</div>
+            <div class="nation"><span class="new">DEBUT</span> JORDAN</div>
+            <div class="nation"><span class="new">DEBUT</span> UZBEKISTAN</div>
+          </div>
+        </div>
+        <div class="bottom-bar">
+          <span>FIRST-TIME NATIONS — 2026</span>
+          <span>+ 4 DEBUTANTS</span>
+        </div>
+      </div>
+
+      <!-- ──────────── SCENE 7: VERDICT ──────────── -->
+      <div id="scene7" class="scene">
+        <video
+          id="vid-scene7"
+          class="scene-video"
+          src="assets/clips/07_verdict_processed.mp4"
+          muted
+          playsinline
+          data-start="140.0"
+          data-duration="15.0"
+          data-track-index="0"
+        ></video>
+        <div class="scene-vignette"></div>
+        <div class="scene-glow" id="s7-glow" style="left: 50%; top: 50%; transform: translate(-50%, -50%); width: 1600px; height: 1600px; opacity: 0.5;"></div>
+        <div class="top-bar">
+          <span><span class="mark">●</span>&nbsp;&nbsp;06 — THE VERDICT</span>
+          <span>02:21 / 02:48</span>
+        </div>
+        <div class="scene-content">
+          <div class="eyebrow" id="s7-eyebrow">// THE FINAL WHISTLE APPROACHES</div>
+          <h2 class="display headline" id="s7-headline">FOOTBALL<br /><span class="accent">HISTORY.</span></h2>
+          <p class="sub" id="s7-sub">In real time. Don't sleep on it.</p>
+          <div class="date" id="s7-date">FINAL · JULY 19, 2026 · METLIFE STADIUM</div>
+          <div class="trophy" id="s7-trophy">🏆</div>
+        </div>
+        <div class="bottom-bar">
+          <span>39 DAYS OF FOOTBALL</span>
+          <span class="pill">JULY 19</span>
+        </div>
+      </div>
+
+      <!-- ──────────── SCENE 8: CTA ──────────── -->
+      <div id="scene8" class="scene">
+        <video
+          id="vid-scene8"
+          class="scene-video"
+          src="assets/clips/08_cta_processed.mp4"
+          muted
+          playsinline
+          data-start="155.0"
+          data-duration="13.0"
+          data-track-index="0"
+        ></video>
+        <div class="scene-vignette"></div>
+        <div class="top-bar">
+          <span><span class="mark">●</span>&nbsp;&nbsp;07 — STAY WITH US</span>
+          <span>02:36 / 02:48</span>
+        </div>
+        <div class="scene-content">
+          <div class="badge" id="s8-badge">// THE CHANNEL</div>
+          <h2 class="display headline" id="s8-headline">SUBSCRIBE.</h2>
+          <p class="sub" id="s8-sub">Every subplot. Every upset. Every controversy until the final whistle — and beyond.</p>
+          <div class="subscribe-btn" id="s8-btn">▶&nbsp;&nbsp;SUBSCRIBE</div>
+          <div class="sub-bottom" id="s8-subbottom">JUNE 11 → JULY 19 → TRANSFER WINDOW</div>
+        </div>
+        <div class="bottom-bar">
+          <span>THE 2026 CHANNEL</span>
+          <span>RING THE BELL</span>
+        </div>
+      </div>
+
+      <!-- ──────────── VOICEOVER AUDIO TRACK ──────────── -->
+      <audio
+        id="vo-track"
+        src="assets/audio/full_voiceover.mp3"
+        data-start="0"
+        data-duration="137.07"
+        data-track-index="2"
+        data-volume="1"
+      ></audio>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+
+      // Scene timing — VISUAL durations (audio is 136.07s; visuals have small breathing tail)
+      // S1  0.0  →   7.0   HOOK
+      // S2  7.0  →  29.0   SCALE         (trans 0.3 @ 28.7)
+      // S3 29.0  →  61.0   LAST DANCE    (trans 0.4 @ 60.6)
+      // S4 61.0  →  85.0   MBAPPÉ        (trans 0.3 @ 84.7)
+      // S5 85.0  → 120.0   HOSTS         (trans 0.4 @ 119.6)
+      // S6 120.0 → 140.0   NEW WORLD     (trans 0.3 @ 139.7)
+      // S7 140.0 → 155.0   VERDICT       (trans 0.3 @ 154.7)
+      // S8 155.0 → 168.0   CTA           (final)
+      // Total: 168.0s
+
+      // ════════════════════════════════════════════
+      // SCENE 1 — HOOK (0.0 → 7.0)
+      // ════════════════════════════════════════════
+      // Heavy slam entrance: rule draws first, then "EVERY WORLD CUP" appears,
+      // rule crosses the gap, "THIS ONE ACTUALLY IS" slams in.
+
+      // initial states (in DOM order they exist; set before any tween reads them)
+      gsap.set("#s1-eyebrow", { y: -30, opacity: 0 });
+      gsap.set("#s1-headline", { y: 80, opacity: 0, scale: 0.9 });
+      gsap.set("#s1-rule", { width: 0 });
+      gsap.set("#s1-headline2", { y: 80, opacity: 0, scale: 0.9 });
+      gsap.set("#s1-subhead", { y: 20, opacity: 0 });
+      gsap.set("#s1-pill", { scale: 0, opacity: 0 });
+
+      tl.to("#s1-eyebrow", { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 0.3);
+      tl.to("#s1-headline", { y: 0, opacity: 1, scale: 1, duration: 0.8, ease: "expo.out" }, 0.7);
+      tl.to("#s1-rule", { width: 240, duration: 0.4, ease: "power3.inOut" }, 2.0);
+      tl.to("#s1-headline2", { y: 0, opacity: 1, scale: 1, duration: 0.7, ease: "expo.out" }, 2.2);
+      tl.to("#s1-subhead", { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, 3.5);
+      tl.to("#s1-pill", { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" }, 4.5);
+
+      // Transition: SCENE 1 → SCENE 2 at t=6.7 (0.3s before S2 reveal)
+      // Glitch RGB shake + zoom out
+      tl.to("#scene1", { scale: 1.08, duration: 0.25, ease: "power3.in" }, 6.7);
+      tl.to("#scene1", { opacity: 0, duration: 0.05, ease: "none" }, 6.95);
+      tl.set("#scene1", { visibility: "hidden" }, 7.0);
+
+      // ════════════════════════════════════════════
+      // SCENE 2 — SCALE (7.0 → 29.0)
+      // ════════════════════════════════════════════
+      gsap.set("#scene2", { opacity: 0 });
+      gsap.set("#s2-eyebrow", { x: -40, opacity: 0 });
+      gsap.set("#s2-headline", { y: 60, opacity: 0 });
+      gsap.set("#s2-sub", { y: 30, opacity: 0 });
+      gsap.set("#s2-stat1", { x: 60, opacity: 0 });
+      gsap.set("#s2-stat2", { x: 60, opacity: 0 });
+      gsap.set("#s2-stat3", { x: 60, opacity: 0 });
+      gsap.set("#s2-stat4", { x: 60, opacity: 0 });
+
+      // reveal scene2
+      tl.to("#scene2", { opacity: 1, duration: 0.3, ease: "power2.inOut" }, 7.0);
+      tl.to("#s2-eyebrow", { x: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 7.4);
+      tl.to("#s2-headline", { y: 0, opacity: 1, duration: 0.7, ease: "expo.out" }, 7.7);
+      tl.to("#s2-sub", { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 8.4);
+      tl.to("#s2-stat1", { x: 0, opacity: 1, duration: 0.5, ease: "back.out(1.4)" }, 9.0);
+      tl.to("#s2-stat2", { x: 0, opacity: 1, duration: 0.5, ease: "back.out(1.4)" }, 9.4);
+      tl.to("#s2-stat3", { x: 0, opacity: 1, duration: 0.5, ease: "back.out(1.4)" }, 9.8);
+      tl.to("#s2-stat4", { x: 0, opacity: 1, duration: 0.5, ease: "back.out(1.4)" }, 10.2);
+
+      // Transition: SCENE 2 → SCENE 3 at t=28.6 (0.4s before S3)
+      // Overexposure burn: brighten S2 to white, then S3 fades in from black
+      tl.to("#scene2", { filter: "brightness(2.5) saturate(0.5)", duration: 0.4, ease: "power3.in" }, 28.6);
+      tl.to("#scene2", { opacity: 0, duration: 0.05 }, 28.95);
+      tl.set("#scene2", { visibility: "hidden" }, 29.0);
+      tl.set("#scene2", { filter: "none" }, 29.0);
+
+      // ════════════════════════════════════════════
+      // SCENE 3 — LAST DANCE (29.0 → 61.0)
+      // ════════════════════════════════════════════
+      gsap.set("#scene3", { opacity: 0 });
+      gsap.set("#s3-eyebrow", { letterSpacing: "0.8em", opacity: 0 });
+      gsap.set("#s3-headline", { y: 100, opacity: 0, scale: 0.85 });
+      gsap.set("#s3-rule", { width: 0 });
+      gsap.set("#s3-sub", { y: 20, opacity: 0 });
+      gsap.set("#s3-names .name:nth-child(1)", { x: -100, opacity: 0 });
+      gsap.set("#s3-names .vs", { scale: 0, opacity: 0 });
+      gsap.set("#s3-names .name:nth-child(3)", { x: 100, opacity: 0 });
+      gsap.set("#s3-glow", { scale: 0, opacity: 0 });
+
+      tl.to("#scene3", { opacity: 1, duration: 0.4, ease: "power2.inOut" }, 29.0);
+      tl.to("#s3-glow", { scale: 1, opacity: 1, duration: 1.5, ease: "power2.out" }, 29.2);
+      tl.to("#s3-eyebrow", { letterSpacing: "0.4em", opacity: 1, duration: 1.0, ease: "power2.out" }, 29.5);
+      tl.to("#s3-headline", { y: 0, opacity: 1, scale: 1, duration: 1.0, ease: "expo.out" }, 30.0);
+      tl.to("#s3-rule", { width: 800, duration: 0.6, ease: "power3.inOut" }, 32.0);
+      tl.to("#s3-sub", { y: 0, opacity: 1, duration: 0.7, ease: "power2.out" }, 33.0);
+      tl.to("#s3-names .name:nth-child(1)", { x: 0, opacity: 1, duration: 0.8, ease: "expo.out" }, 35.0);
+      tl.to("#s3-names .vs", { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(2)" }, 35.3);
+      tl.to("#s3-names .name:nth-child(3)", { x: 0, opacity: 1, duration: 0.8, ease: "expo.out" }, 35.5);
+
+      // Transition: SCENE 3 → SCENE 4 at t=60.6 (0.4s)
+      // Chromatic split: S3 RGB-offset then fade
+      tl.to("#scene3", { x: -40, duration: 0.2, ease: "power3.in" }, 60.6);
+      tl.to("#scene3", { opacity: 0, duration: 0.05 }, 60.95);
+      tl.set("#scene3", { visibility: "hidden" }, 61.0);
+      tl.set("#scene3", { x: 0 });
+
+      // ════════════════════════════════════════════
+      // SCENE 4 — MBAPPÉ (61.0 → 85.0)
+      // ════════════════════════════════════════════
+      gsap.set("#scene4", { opacity: 0 });
+      gsap.set("#s4-counter", { scale: 0.5, opacity: 0 });
+      gsap.set("#s4-counter-num", { scale: 0, opacity: 0 });
+      gsap.set("#s4-age", { y: 20, opacity: 0 });
+      gsap.set("#s4-name", { x: 80, opacity: 0 });
+      gsap.set("#s4-quote", { y: 30, opacity: 0 });
+
+      tl.to("#scene4", { opacity: 1, duration: 0.3, ease: "power2.inOut" }, 61.0);
+      tl.to("#s4-counter", { scale: 1, opacity: 1, duration: 0.6, ease: "expo.out" }, 61.4);
+      tl.to("#s4-counter-num", { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.7)" }, 61.8);
+      tl.to("#s4-age", { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 62.5);
+      tl.to("#s4-name", { x: 0, opacity: 1, duration: 0.7, ease: "expo.out" }, 63.0);
+      tl.to("#s4-quote", { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, 63.8);
+
+      // Transition: SCENE 4 → SCENE 5 at t=84.6 (0.4s)
+      // Whip pan left
+      tl.to("#scene4", { x: -600, scale: 1.1, duration: 0.4, ease: "power3.in" }, 84.6);
+      tl.to("#scene4", { opacity: 0, duration: 0.05 }, 84.95);
+      tl.set("#scene4", { visibility: "hidden" }, 85.0);
+      tl.set("#scene4", { x: 0, scale: 1 });
+
+      // ════════════════════════════════════════════
+      // SCENE 5 — HOSTS (85.0 → 120.0)
+      // ════════════════════════════════════════════
+      gsap.set("#scene5", { opacity: 0 });
+      gsap.set("#s5-eyebrow", { y: -20, opacity: 0 });
+      gsap.set("#s5-headline", { y: 60, opacity: 0 });
+      gsap.set("#s5-card1", { y: 80, opacity: 0 });
+      gsap.set("#s5-card2", { y: 80, opacity: 0 });
+      gsap.set("#s5-card3", { y: 80, opacity: 0 });
+
+      tl.to("#scene5", { opacity: 1, duration: 0.4, ease: "power2.inOut" }, 85.0);
+      tl.to("#s5-eyebrow", { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 85.3);
+      tl.to("#s5-headline", { y: 0, opacity: 1, duration: 0.7, ease: "expo.out" }, 85.6);
+      tl.to("#s5-card1", { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 86.3);
+      tl.to("#s5-card2", { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 86.6);
+      tl.to("#s5-card3", { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 86.9);
+
+      // Transition: SCENE 5 → SCENE 6 at t=119.6 (0.4s)
+      // Shutter: top half slides up, bottom half slides down
+      // Simulate with two halves via clip-path
+      gsap.set("#scene5", { clipPath: "inset(0 0 0 0)" });
+      tl.to("#scene5", { clipPath: "inset(50% 0 50% 0)", duration: 0.4, ease: "power3.in" }, 119.6);
+      tl.set("#scene5", { opacity: 0 }, 120.0);
+      tl.set("#scene5", { visibility: "hidden" }, 120.0);
+      tl.set("#scene5", { clipPath: "inset(0 0 0 0)" }, 120.0);
+
+      // ════════════════════════════════════════════
+      // SCENE 6 — NEW WORLD (120.0 → 140.0)
+      // ════════════════════════════════════════════
+      gsap.set("#scene6", { opacity: 0 });
+      gsap.set("#s6-eyebrow", { y: -20, opacity: 0 });
+      gsap.set("#s6-headline", { y: 60, opacity: 0, scale: 0.95 });
+      gsap.set("#s6-sub", { y: 20, opacity: 0 });
+      gsap.set("#s6-nations .nation", { y: 40, opacity: 0, scale: 0.8 });
+      gsap.set("#s6-glow", { scale: 0, opacity: 0 });
+
+      tl.to("#scene6", { opacity: 1, duration: 0.3, ease: "power2.inOut" }, 120.0);
+      tl.to("#s6-glow", { scale: 1, opacity: 1, duration: 1.2, ease: "power2.out" }, 120.2);
+      tl.to("#s6-eyebrow", { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 120.4);
+      tl.to("#s6-headline", { y: 0, opacity: 1, scale: 1, duration: 0.7, ease: "expo.out" }, 120.7);
+      tl.to("#s6-sub", { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 121.5);
+      tl.to("#s6-nations .nation:nth-child(1)", { y: 0, opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.4)" }, 122.5);
+      tl.to("#s6-nations .nation:nth-child(2)", { y: 0, opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.4)" }, 122.8);
+      tl.to("#s6-nations .nation:nth-child(3)", { y: 0, opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.4)" }, 123.1);
+      tl.to("#s6-nations .nation:nth-child(4)", { y: 0, opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.4)" }, 123.4);
+
+      // Transition: SCENE 6 → SCENE 7 at t=139.6 (0.4s)
+      // Focus pull: blur S6 then cut
+      tl.to("#scene6", { filter: "blur(20px) brightness(1.2)", duration: 0.4, ease: "power2.in" }, 139.6);
+      tl.set("#scene6", { opacity: 0 }, 140.0);
+      tl.set("#scene6", { visibility: "hidden" }, 140.0);
+      tl.set("#scene6", { filter: "none" }, 140.0);
+
+      // ════════════════════════════════════════════
+      // SCENE 7 — VERDICT (140.0 → 155.0)
+      // ════════════════════════════════════════════
+      gsap.set("#scene7", { opacity: 0 });
+      gsap.set("#s7-eyebrow", { y: -20, opacity: 0 });
+      gsap.set("#s7-headline", { y: 80, opacity: 0, scale: 0.9 });
+      gsap.set("#s7-sub", { y: 20, opacity: 0 });
+      gsap.set("#s7-date", { y: 20, opacity: 0 });
+      gsap.set("#s7-trophy", { scale: 0, rotation: -180, opacity: 0 });
+      gsap.set("#s7-glow", { scale: 0.5, opacity: 0 });
+
+      tl.to("#scene7", { opacity: 1, duration: 0.3, ease: "power2.inOut" }, 140.0);
+      tl.to("#s7-glow", { scale: 1, opacity: 0.5, duration: 1.5, ease: "power2.out" }, 140.2);
+      tl.to("#s7-eyebrow", { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 140.4);
+      tl.to("#s7-headline", { y: 0, opacity: 1, scale: 1, duration: 0.9, ease: "expo.out" }, 140.7);
+      tl.to("#s7-sub", { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 142.0);
+      tl.to("#s7-date", { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 142.6);
+      tl.to("#s7-trophy", { scale: 1, rotation: 0, opacity: 0.15, duration: 1.0, ease: "back.out(1.5)" }, 143.5);
+
+      // Transition: SCENE 7 → SCENE 8 at t=154.6 (0.4s)
+      // Color dip to black: S7 fades to black, S8 fades up from black
+      tl.to("#scene7", { opacity: 0, duration: 0.4, ease: "power2.in" }, 154.6);
+      tl.set("#scene7", { visibility: "hidden" }, 155.0);
+
+      // ════════════════════════════════════════════
+      // SCENE 8 — CTA (155.0 → 168.0) — FINAL SCENE
+      // ════════════════════════════════════════════
+      gsap.set("#scene8", { opacity: 0 });
+      gsap.set("#s8-badge", { y: -20, opacity: 0 });
+      gsap.set("#s8-headline", { y: 80, opacity: 0, scale: 0.9 });
+      gsap.set("#s8-sub", { y: 20, opacity: 0 });
+      gsap.set("#s8-btn", { scale: 0, opacity: 0 });
+      gsap.set("#s8-subbottom", { y: 20, opacity: 0 });
+
+      tl.to("#scene8", { opacity: 1, duration: 0.4, ease: "power2.inOut" }, 155.0);
+      tl.to("#s8-badge", { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 155.4);
+      tl.to("#s8-headline", { y: 0, opacity: 1, scale: 1, duration: 0.9, ease: "expo.out" }, 155.7);
+      tl.to("#s8-sub", { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 157.0);
+      tl.to("#s8-btn", { scale: 1, opacity: 1, duration: 0.6, ease: "back.out(1.5)" }, 158.0);
+      tl.to("#s8-subbottom", { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" }, 159.0);
+
+      // FINAL SCENE — fade everything out at end (only allowed here)
+      tl.to("#scene8 .scene-content > *", { opacity: 0, y: -20, duration: 0.5, ease: "power2.in", stagger: 0.05 }, 166.5);
+      tl.to("#scene8 .top-bar, #scene8 .bottom-bar", { opacity: 0, duration: 0.3 }, 166.5);
+      tl.to("#scene8", { opacity: 0, duration: 0.4 }, 167.2);
+      tl.set("#scene8", { visibility: "hidden" }, 167.6);
+
+      window.__timelines["world-cup-2026"] = tl;
+    </script>
+  </body>
+</html>

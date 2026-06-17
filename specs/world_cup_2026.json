@@ -1,0 +1,185 @@
+{
+  "id": "world_cup_2026",
+  "youtube": {
+    "title": "Why the 2026 World Cup Is Different From Every Other One",
+    "description": "The 2026 FIFA World Cup kicks off June 11 - the biggest, most consequential tournament ever staged. 48 teams, 104 games, three host nations.\n\nMessi and Ronaldo's last dance. Mbappe four goals from the all-time record. The USA hosting on home soil for the first time. First-time nations stepping onto the world stage.\n\nSubscribe - we're covering every subplot, every upset, every controversy through the final on July 19th.\n\n0:00 Intro\n0:08 The Scale of 2026\n0:45 Messi & Ronaldo's Last Dance\n1:45 The Mbappe Record\n2:30 USA, Canada & Mexico as Hosts\n3:15 First-Time Nations\n3:50 The Verdict\n4:20 Subscribe",
+    "tags": [
+      "2026 World Cup",
+      "FIFA World Cup 2026",
+      "World Cup preview",
+      "Messi last World Cup",
+      "Ronaldo 2026",
+      "Mbappe record",
+      "USMNT World Cup",
+      "football 2026",
+      "soccer analysis",
+      "World Cup history"
+    ],
+    "privacy": "private",
+    "category_id": "17"
+  },
+  "tts": {
+    "stability": 0.45,
+    "model_id": "eleven_multilingual_v2"
+  },
+  "scenes": [
+    {
+      "id": "01_hook",
+      "kind": "hook",
+      "duration_s": 7,
+      "source": "pixabay",
+      "query": "soccer stadium crowd cheering",
+      "script": "Every World Cup gets called historic. This one actually is. And I can prove it in four minutes.",
+      "eyebrow": "// THE RECKONING",
+      "headline": "EVERY WORLD CUP<br />GETS CALLED <accent>HISTORIC.</accent><br />THIS ONE <accent>ACTUALLY IS.</accent>",
+      "subhead": "// 4 MINUTES &nbsp;//&nbsp; 8 REASONS &nbsp;//&nbsp; 1 VERDICT",
+      "pill": "PROOF",
+      "top_label": "LIVE — FIFA WORLD CUP 2026",
+      "bottom_label": "JUNE 11, 2026 — JULY 19, 2026"
+    },
+    {
+      "id": "02_scale",
+      "kind": "scale",
+      "duration_s": 22,
+      "source": "pixabay",
+      "query": "world map football stadium",
+      "script": "48 teams. 104 games. 16 cities spread across three countries. The 2026 World Cup isn't just bigger than every tournament before it - it's a completely different animal. More nations, more drama, more paths to the final. The old rules about who can win this thing? They don't apply anymore.",
+      "eyebrow": "// THE ANIMAL IS DIFFERENT",
+      "headline": "BIGGER<br />THAN<br />EVERY CUP<br /><accent>BEFORE.</accent>",
+      "sub": "A completely different tournament. The largest single sporting event on Earth.",
+      "stats": [
+        { "num": "48", "label": "NATIONS" },
+        { "num": "104", "label": "MATCHES" },
+        { "num": "16", "label": "HOST CITIES" },
+        { "num": "3", "label": "COUNTRIES" }
+      ],
+      "top_label": "01 — THE SCALE",
+      "bottom_label": "USA · CAN · MEX"
+    },
+    {
+      "id": "03_last_dance",
+      "kind": "portrait",
+      "duration_s": 32,
+      "source": "pixabay",
+      "query": "soccer football match crowd",
+      "script": "Let's talk about Messi and Ronaldo. Two men who defined an entire era of football - arguably the two greatest players the sport has ever seen - sharing a World Cup stage for almost certainly the very last time. Messi is coming in carrying a hamstring issue. Ronaldo at 41. Neither of them cares. They have spent their entire careers chasing this tournament. One has it. The other doesn't. And this is the last chapter.",
+      "eyebrow": "// TWO MEN. ONE ERA. THE FINAL ACT.",
+      "headline": "THE LAST<br /><accent>DANCE.</accent>",
+      "sub": "Messi and Ronaldo defined a generation of football. This is almost certainly the last time they share a World Cup stage.",
+      "names": [
+        { "name": "MESSI", "year": "AGE 38 · 2022 CHAMPION" },
+        { "name": "RONALDO", "year": "AGE 41 · 5 GOLDEN BOOTS" }
+      ],
+      "top_label": "02 — THE LAST DANCE",
+      "bottom_label": "2026 — THE FINALE"
+    },
+    {
+      "id": "04_mbappe",
+      "kind": "record",
+      "duration_s": 24,
+      "source": "pixabay",
+      "query": "football player dribbling ball",
+      "script": "While the legends prepare for their final act, Kylian Mbappe is four goals away from the all-time World Cup scoring record. He is 27 years old. If he stays fit and France go deep - which they're fully capable of - we could watch that record fall in real time. That's the torch being passed, live, in front of a billion people.",
+      "eyebrow": "// THE HUNTER",
+      "counter_label": "GOALS FROM THE RECORD",
+      "counter_num": "4",
+      "counter_suffix": "MIROSLAV KLOSE — 16 GOALS",
+      "name": "MBAPPÉ.",
+      "quote": "He is 27 years old. Klose was 36 when he retired. Let that sink in.",
+      "top_label": "03 — THE RECORD CHASE",
+      "bottom_label": "FRANCE · CAPTAIN",
+      "pill": "RECORD IN SIGHT"
+    },
+    {
+      "id": "05_hosts",
+      "kind": "grid",
+      "duration_s": 35,
+      "source": "pixabay",
+      "query": "sports stadium crowd cheering",
+      "script": "USA. Canada. Mexico. Three host nations, three very different expectations. Mexico are experienced - this is nothing new for them. Canada are energised - their first World Cup since 1986. And the United States? Mauricio Pochettino has publicly said his team can win the whole thing. On home soil, in front of a country that is only just starting to take football seriously - that is either the boldest call in USMNT history, or the most delusional.",
+      "eyebrow": "// THREE NATIONS. ONE PRESSURE.",
+      "headline": "THE HOME <accent>FRONT.</accent>",
+      "cards": [
+        {
+          "flag": "🇺🇸",
+          "name": "USA",
+          "stats": [
+            "<span class=\"v\">Pochettino</span> · Manager",
+            "Group <span class=\"v\">D</span> · Rd 1 vs PAR",
+            "Best finish: <span class=\"v\">QTR 2002</span>"
+          ],
+          "quote": "\"The US can win it.\""
+        },
+        {
+          "flag": "🇨🇦",
+          "name": "CANADA",
+          "stats": [
+            "<span class=\"v\">Marsch</span> · Manager",
+            "Group <span class=\"v\">B</span> · Rd 1 vs CMR",
+            "Best finish: <span class=\"v\">GROUP 2022</span>"
+          ],
+          "quote": "\"First men's WC since 1986.\""
+        },
+        {
+          "flag": "🇲🇽",
+          "name": "MEXICO",
+          "stats": [
+            "<span class=\"v\">Aguirre</span> · Manager",
+            "Group <span class=\"v\">A</span> · Rd 1 vs SWE",
+            "Best finish: <span class=\"v\">QTR 1970/86</span>"
+          ],
+          "quote": "\"El Tri. Home soil.\""
+        }
+      ],
+      "top_label": "04 — THE HOSTS",
+      "bottom_label": "NORTH AMERICA"
+    },
+    {
+      "id": "06_new_world",
+      "kind": "quote",
+      "duration_s": 20,
+      "source": "pixabay",
+      "query": "world map globe football soccer",
+      "script": "And then there are the debutants. Cape Verde. Curacao. Jordan. Uzbekistan. Nations stepping onto the world's biggest stage for the first time ever. The 48-team format created those spots - and someone is going to use one of them to cause the upset of the tournament.",
+      "eyebrow": "// FOOTBALL'S EXPANDING UNIVERSE",
+      "quote": "A <accent>NEW WORLD.</accent>",
+      "attribution": "CAPE VERDE · CURAÇAO · JORDAN · UZBEKISTAN",
+      "sub": "First-time nations. Players from islands and steppes the World Cup has never seen.",
+      "top_label": "05 — DEBUTANTS",
+      "bottom_label": "+ 4 DEBUTANTS"
+    },
+    {
+      "id": "07_verdict",
+      "kind": "quote",
+      "duration_s": 15,
+      "source": "pixabay",
+      "query": "soccer trophy championship golden",
+      "script": "Whatever happens between June 11th and July 19th - whoever lifts that trophy - we are watching football history unfold in real time. This is not a normal World Cup. Don't treat it like one.",
+      "eyebrow": "// THE FINAL WHISTLE APPROACHES",
+      "quote": "FOOTBALL<br /><accent>HISTORY.</accent>",
+      "attribution": "FINAL · JULY 19, 2026 · METLIFE STADIUM",
+      "sub": "In real time. Don't sleep on it.",
+      "top_label": "06 — THE VERDICT",
+      "bottom_label": "39 DAYS OF FOOTBALL",
+      "pill": "JULY 19"
+    },
+    {
+      "id": "08_cta",
+      "kind": "list",
+      "duration_s": 13,
+      "source": "pixabay",
+      "query": "soccer football team celebration",
+      "script": "Subscribe. We are covering every subplot, every upset, and every controversy until the final whistle. You don't want to miss what's coming.",
+      "eyebrow": "// THE CHANNEL",
+      "headline": "SUBSCRIBE.",
+      "items": [
+        "EVERY SUBPLOT",
+        "EVERY UPSET",
+        "EVERY CONTROVERSY",
+        "EVERY MOMENT"
+      ],
+      "top_label": "07 — STAY WITH US",
+      "bottom_label": "RING THE BELL"
+    }
+  ]
+}

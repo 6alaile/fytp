@@ -1,0 +1,7 @@
+requests>=2.31
+tqdm>=4.66
+Pillow>=10.0
+elevenlabs>=0.2.0
+google-auth>=2.27
+google-auth-oauthlib>=1.2
+google-api-python-client>=2.120

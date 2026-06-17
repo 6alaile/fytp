@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>__SCENE_ID__</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: __BG__;
+        --fg: __FG__;
+        --accent: __ACCENT__;
+        --accent-dim: __ACCENT_DIM__;
+        --rule: __RULE__;
+        --muted: __MUTED__;
+        --danger: __DANGER__;
+      }
+
+      html, body {
+        margin: 0; padding: 0;
+        background: var(--bg); color: var(--fg);
+        font-family: "Manrope", system-ui, sans-serif;
+        font-weight: 350;
+        font-size: 28px; line-height: 1.35;
+        letter-spacing: 0.005em;
+        overflow: hidden;
+        width: 1920px; height: 1080px;
+      }
+
+      .display, .display * {
+        font-family: "Anton", "Bebas Neue", "Arial Narrow", sans-serif;
+        font-weight: 400;
+        letter-spacing: -0.005em;
+        line-height: 0.92;
+        text-transform: uppercase;
+      }
+
+      .mono, .mono * {
+        font-family: "JetBrains Mono", "Courier New", monospace;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0;
+      }
+
+      .scene {
+        position: absolute; inset: 0;
+        width: 1920px; height: 1080px;
+        overflow: hidden; background: var(--bg);
+        z-index: 1;
+      }
+
+      .scene-video {
+        position: absolute; inset: 0;
+        width: 1920px; height: 1080px;
+        object-fit: cover; z-index: 1;
+        filter: brightness(0.55) saturate(0.7);
+      }
+
+      .scene-vignette {
+        position: absolute; inset: 0; z-index: 2;
+        background:
+          radial-gradient(ellipse 80% 60% at 50% 50%, rgba(10,10,10,0.35), rgba(10,10,10,0.85) 100%),
+          linear-gradient(180deg, rgba(10,10,10,0.4) 0%, rgba(10,10,10,0.1) 30%, rgba(10,10,10,0.7) 100%);
+        pointer-events: none;
+      }
+
+      .scene-glow {
+        position: absolute;
+        width: 1400px; height: 1400px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255,215,0,0.12) 0%, rgba(255,215,0,0) 60%);
+        z-index: 2; pointer-events: none;
+      }
+
+      .scene-content {
+        position: relative;
+        width: 100%; height: 100%;
+        padding: 100px 120px;
+        box-sizing: border-box;
+        display: flex; flex-direction: column;
+        justify-content: center;
+        gap: 32px;
+        z-index: 3;
+      }
+
+      .top-bar {
+        position: absolute; top: 0; left: 0; right: 0;
+        height: 60px; padding: 0 120px;
+        display: flex; justify-content: space-between; align-items: center;
+        z-index: 5;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 18px; color: var(--muted);
+        letter-spacing: 0.08em; text-transform: uppercase;
+        border-bottom: 1px solid var(--rule);
+      }
+      .top-bar .mark { color: var(--accent); font-weight: 700; }
+
+      .bottom-bar {
+        position: absolute; bottom: 0; left: 0; right: 0;
+        height: 80px; padding: 0 120px;
+        display: flex; justify-content: space-between; align-items: center;
+        z-index: 5;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 20px; color: var(--muted);
+        letter-spacing: 0.06em; text-transform: uppercase;
+        border-top: 1px solid var(--rule);
+      }
+      .bottom-bar .pill {
+        color: var(--accent);
+        padding: 6px 14px;
+        border: 1px solid var(--accent);
+        border-radius: 2px;
+      }
+
+      __KIND_CSS__
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="__COMPOSITION_ID__"
+      data-width="1920"
+      data-height="1080"
+      data-start="0"
+      data-duration="__DURATION__"
+    >
+      <div id="scene1" class="scene">
+        <video
+          id="vid-scene1"
+          class="scene-video"
+          src="../clips/__CLIP__.mp4"
+          muted
+          playsinline
+          data-start="0"
+          data-duration="__DURATION__"
+        ></video>
+        <div class="scene-vignette"></div>
+        <div class="top-bar">
+          <span><span class="mark">●</span>&nbsp;&nbsp;__TOP_LABEL__</span>
+          <span>__TOP_RIGHT__</span>
+        </div>
+        <div class="scene-content">
+          __KIND_CONTENT__
+        </div>
+        <div class="bottom-bar">
+          <span>__BOTTOM_LABEL__</span>
+          __PILL_HTML__
+        </div>
+      </div>
+
+      <audio
+        id="vo-track"
+        src="../audio/__CLIP__.mp3"
+        data-start="0"
+        data-duration="__DURATION__"
+      ></audio>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      __KIND_ANIM__
+      window.__timelines["__COMPOSITION_ID__"] = tl;
+    </script>
+  </body>
+</html>
