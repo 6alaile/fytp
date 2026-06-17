@@ -12,13 +12,26 @@ Slot conventions:
   - All element ids are scoped by scene id: e.g. scene["id"] + "-eyebrow".
   - Animations only target this scene's elements; no cross-scene logic.
   - Timeline is paused on construction; HyperFrames drives it via window.__timelines.
+
+CSS class names are prefixed with `s-` (the variable `cls` here) because
+the spec allows scene ids that start with a digit (e.g. "01_hook"), and
+CSS identifiers cannot begin with one. The same `cls` is used in the
+generated HTML class attributes and in the CSS/JS selectors so the three
+stay in sync.
 """
 
 from __future__ import annotations
 
 
+def cls(sid: str) -> str:
+    """CSS-safe class prefix for a scene id. Scene ids may start with a
+    digit (e.g. "01_hook"), which is illegal as a CSS identifier start;
+    we prefix with "s-" to keep all generated selectors valid."""
+    return f"s-{sid}"
+
+
 def hook(scene: dict) -> tuple[str, str, str]:
-    sid = scene["id"]
+    sid = cls(scene["id"])
     eyebrow = scene["eyebrow"]
     headline = scene["headline"]
     subhead = scene["subhead"]
@@ -59,7 +72,7 @@ def hook(scene: dict) -> tuple[str, str, str]:
 
 
 def scale(scene: dict) -> tuple[str, str, str]:
-    sid = scene["id"]
+    sid = cls(scene["id"])
     eyebrow = scene.get("eyebrow", "")
     headline = scene["headline"]
     sub = scene.get("sub", "")
@@ -136,7 +149,7 @@ def scale(scene: dict) -> tuple[str, str, str]:
 
 
 def portrait(scene: dict) -> tuple[str, str, str]:
-    sid = scene["id"]
+    sid = cls(scene["id"])
     eyebrow = scene["eyebrow"]
     headline = scene["headline"]
     sub = scene.get("sub", "")
@@ -204,7 +217,7 @@ def portrait(scene: dict) -> tuple[str, str, str]:
 
 
 def record(scene: dict) -> tuple[str, str, str]:
-    sid = scene["id"]
+    sid = cls(scene["id"])
     eyebrow = scene.get("eyebrow", "")
     counter_label = scene["counter_label"]
     counter_num = scene["counter_num"]
@@ -282,7 +295,7 @@ def record(scene: dict) -> tuple[str, str, str]:
 
 
 def grid(scene: dict) -> tuple[str, str, str]:
-    sid = scene["id"]
+    sid = cls(scene["id"])
     eyebrow = scene.get("eyebrow", "")
     headline = scene["headline"]
     cards = scene["cards"]
@@ -363,7 +376,7 @@ def grid(scene: dict) -> tuple[str, str, str]:
 
 
 def quote(scene: dict) -> tuple[str, str, str]:
-    sid = scene["id"]
+    sid = cls(scene["id"])
     eyebrow = scene["eyebrow"]
     quote_text = scene["quote"]
     attribution = scene["attribution"]
@@ -417,7 +430,7 @@ def quote(scene: dict) -> tuple[str, str, str]:
 
 
 def list(scene: dict) -> tuple[str, str, str]:
-    sid = scene["id"]
+    sid = cls(scene["id"])
     eyebrow = scene["eyebrow"]
     headline = scene["headline"]
     items = scene["items"]
@@ -483,7 +496,7 @@ def list(scene: dict) -> tuple[str, str, str]:
 
 
 def split(scene: dict) -> tuple[str, str, str]:
-    sid = scene["id"]
+    sid = cls(scene["id"])
     eyebrow = scene["eyebrow"]
     headline = scene["headline"]
     body = scene["body"]

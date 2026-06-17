@@ -1,8 +1,8 @@
 # gh-ffyt — JSON-spec-driven faceless video factory
 
-A general-purpose pipeline that turns a single JSON spec into a 1920×1080
-30 fps MP4 and optionally publishes it to YouTube. The first spec is the
-2026 FIFA World Cup explainer; new specs need zero code changes.
+A general-purpose pipeline that turns a JSON spec into a 1920×1080 30 fps
+MP4 and optionally publishes it to YouTube. The first spec is the 2026
+FIFA World Cup explainer; new specs need zero code changes.
 
 ```
 specs/<name>.json  ──►  python scripts/compose.py

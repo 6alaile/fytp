@@ -135,6 +135,6 @@ def generate_voiceover(
 
     print(f"  ! edge-tts failed — falling back to ElevenLabs for {dest.name}")
     if not (voice_id and os.environ.get("ELEVENLABS_API_KEY")):
-        print("  ! ElevenLabs unavailable (no ELEVENLABS_API_KEY or voice_id) — skipping")
+        print("  ! ElevenLabs unavailable (no ELEVENLABS_API_KEY or voice_id) — using edge-tts as primary; this shouldn't normally trigger")
         return False
     return generate_with_elevenlabs(text, dest, voice_id, tts)
